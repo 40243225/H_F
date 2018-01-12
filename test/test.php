@@ -1,0 +1,50 @@
+﻿<?php
+ini_set('memory_limit', '-1');
+require_once "..\jieba\src\\vendor\multi-array\MultiArray.php";
+require_once "..\jieba\src\\vendor\multi-array\Factory\MultiArrayFactory.php";
+require_once "..\jieba\src\class\Jieba.php";
+require_once "..\jieba\src\class\JiebaAnalyse.php";
+require_once "..\jieba\src\class\Finalseg.php";
+use Fukuball\Jieba\Jieba;
+use Fukuball\Jieba\Finalseg;
+use Fukuball\Jieba\JiebaAnalyse;
+
+Jieba::init(array('mode'=>'test','dict'=>'big'));
+Finalseg::init();
+JiebaAnalyse::init();
+JiebaAnalyse::setStopWords('../jieba/src/dict/stop_words.txt');
+$top_k = 20;
+//$xmlresults = file_get_contents("https://data.fda.gov.tw/cacheData/159_1.xml");
+$xml=simplexml_load_file("https://data.fda.gov.tw/cacheData/159_1.xml");
+//echo $xml->getName("分類");
+foreach($xml->rows as $data)
+{
+	echo "分類:".$data->分類."<br>";
+	echo"標題".$data->標題."<br>";
+	echo"內容".$data->內容."<br>";
+	echo"日期".$data->發布日期."<br>";
+	$tags = JiebaAnalyse::extractTags($data->標題, $top_k);
+	$array=array_keys($tags);
+	$i=1;
+	echo "關鍵字:<br>";
+	foreach ($array as $key) {
+		echo $i.":".$key."<br>";
+		$i++;
+	}
+	echo "<--------------END----------------><br>";
+}
+
+
+/*$content = "近來網路Line流傳「部分輻射汙染地區輸台食品」之消息，經查，該則訊息產品為104年度日本食品偽標事件，本署公布於網站之違規產品，該次事件中涉違規之相關產品均已下架、回收並銷毀；所有相關疑似問題產品經行政院原子能委員會進行輻射檢驗，均未檢出。     本署於104年4月15日公告訂定「自日本輸入食品須檢附產地證明文件」及「自日本輸入之特定食品須檢附輻射檢測證明」之強化邊境管控措施，並自104年5月15日起正式施行；實施此雙證措施後，已可明確知道日本輸入食品之產地，非為來自日本5縣(福島、茨城、櫪木、千葉及群馬)。     食藥署提醒民眾，對於此類傳言，應抱持小心謹慎的態度，不要隨便輕易相信，也避免再轉傳親友。";
+
+
+$tags = JiebaAnalyse::extractTags($content, $top_k);*/
+
+
+
+/*JiebaAnalyse::setStopWords('/path/to/your/dict/stop_words.txt');
+
+$tags = JiebaAnalyse::extractTags($content, $top_k);
+
+var_dump($tags);*/
+?>
